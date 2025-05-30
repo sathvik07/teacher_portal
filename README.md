@@ -1,4 +1,4 @@
-# 🧑‍🏫 Django Teacher Portal
+# Django Teacher Portal
 
 A simple teacher portal to manage students, built with Django, HTML, and JavaScript.
 
