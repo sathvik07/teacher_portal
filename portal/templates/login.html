@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teacher Login</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, serif;
+            background: #f8f8f8;
+            text-align: center;
+            padding-top: 100px;
+        }
+        form {
+            background: #fff;
+            padding: 40px;
+            display: inline-block;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            width: 600px;
+            height: 300px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        label {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .input-container {
+            position: relative;
+            width: 100%;
+        }
+        .input-container input {
+            padding: 12px 50px;
+            width: 80%;
+            font-size: 16px;
+        }
+        .input-container svg {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            color: #888;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 20px;
+            color: #888;
+            user-select: none;
+        }
+        button {
+            padding: 12px 25px;
+            font-size: 16px;
+            background: black;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 250px;
+        }
+        button:hover {
+            background: #333;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+        }
+        h2 {
+            font-size: 36px;
+            font-weight: bold;
+            color: red;
+        }
+        .forgot-password {
+            font-size: 14px;
+            text-align: right;
+            display: block;
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
+        .forgot-password a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script>
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById("password");
+            const toggleIcon = document.getElementById("toggle-password");
+            const icon = toggleIcon.querySelector("i");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                passwordInput.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>tailwebs.</h2>
+    {% if error %}
+    {% endif %}
+        <p class="error">{{ error }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="username">Username</label>
+            <div class="input-container">
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM6 18c0-2.21 3.58-4 6-4s6 1.79 6 4v1H6v-1z"></path>
+                </svg>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-container">
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2V9a2 2 0 00-2-2h-1V6a4 4 0 10-8 0v1H6a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <span id="toggle-password" class="toggle-password" onclick="togglePasswordVisibility()">
+                    <i class="fa-solid fa-eye"></i>
+                </span>
+            </div>
+        </div>
+        <span class="forgot-password">
+            <a href="#">Forgot Password?</a>
+        </span>
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teacher Portal</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f2f2f2;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+
+        .header .left {
+            font-size: 30px;
+            font-weight: bold;
+            color: red;
+        }
+
+        .header .right a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: black;
+            font-size: 16px;
+        }
+
+        .header .right a:hover {
+            text-decoration: underline;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            margin-top: 20px;
+        }
+
+        th {
+            padding: 12px;
+            color: #747474;
+            text-align: center;
+            border-bottom: 1px solid #ccc;
+        }
+
+        td {
+            padding: 10px;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            vertical-align: middle;
+        }
+
+        td.actions {
+            text-align: center;
+            position: relative;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 90%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        .name-icon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            line-height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        .dropdown {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .arrow-button {
+            background: black;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fff;
+            width: 120px;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+            z-index: 1;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            text-align: left;
+        }
+
+        .dropdown-content button,
+        .dropdown-content a {
+            color: black;
+            padding: 8px 12px;
+            background: white;
+            border: none;
+            text-align: left;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .dropdown-content button:hover,
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .add-student-btn {
+            margin-top: 30px;
+            padding: 10px 20px;
+            background-color: black;
+            color: white;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            width: 10%;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .form-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 6px;
+            width: 500px;
+            margin: 10% auto;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 8px;
+        }
+
+        .input-wrapper .icon {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .input-wrapper input {
+            border: none;
+            outline: none;
+            flex: 1;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+        }
+
+        .submit-btn {
+            background: black;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            cursor: pointer;
+            width: 50%;
+            margin-top: 10px;
+        }
+
+        .save-btn {
+            display: none;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="left">tailwebs.</div>
+    <div class="right">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+</div>
+
+<form method="post" id="editForm" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="name" id="editName">
+    <input type="hidden" name="subject" id="editSubject">
+    <input type="hidden" name="marks" id="editMarks">
+</form>
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Subject</th>
+        <th>Marks</th>
+        <th>Actions</th>
+    </tr>
+    {% for student in students %}
+    <tr id="row-{{ student.id }}">
+        <td>
+            <span class="name-icon">{{ student.name|slice:":1" }}</span>
+            <span class="name">{{ student.name }}</span>
+        </td>
+        <td class="subject">{{ student.subject }}</td>
+        <td class="marks">{{ student.marks }}</td>
+        <td class="actions">
+            <div class="dropdown">
+                <button class="arrow-button">▼</button>
+                <div class="dropdown-content">
+                    <button onclick="enableEdit({{ student.id }}); event.preventDefault();">Edit</button>
+                    <form method="get" action="{% url 'delete_student' student.id %}" onsubmit="return confirm('Delete this student?');">
+                        <button type="submit">Delete</button>
+                    </form>
+                </div>
+            </div>
+            <button class="save-btn" onclick="submitEdit({{ student.id }}, '{% url 'edit_student' student.id %}')" id="saveBtn-{{ student.id }}">Save</button>
+        </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4">No students yet.</td></tr>
+    {% endfor %}
+</table>
+
+<button class="add-student-btn" onclick="showModal()">Add</button>
+
+<!-- Add Student Modal -->
+<div id="studentModal" class="modal">
+    <div class="form-container">
+        <form method="post" action="{% url 'add_student' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">Name</label>
+                <div class="input-wrapper">
+                    <div class="icon" data-lucide="user"></div>
+                    <input type="text" id="name" name="name" placeholder="Enter student's name" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="subject">Subject</label>
+                <div class="input-wrapper">
+                    <div class="icon" data-lucide="book-open"></div>
+                    <input type="text" id="subject" name="subject" placeholder="Enter subject" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="marks">Mark</label>
+                <div class="input-wrapper">
+                    <div class="icon" data-lucide="bookmark"></div>
+                    <input type="number" id="marks" name="marks" placeholder="Enter marks" required>
+                </div>
+            </div>
+            <div class="button-group">
+                <button type="submit" class="submit-btn">Add</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function showModal() {
+        document.getElementById('studentModal').classList.add('show');
+    }
+
+    function hideModal() {
+        document.getElementById('studentModal').classList.remove('show');
+    }
+
+    function enableEdit(id) {
+        const row = document.getElementById('row-' + id);
+        const nameCell = row.querySelector('.name');
+        const subjectCell = row.querySelector('.subject');
+        const marksCell = row.querySelector('.marks');
+        const saveBtn = document.getElementById('saveBtn-' + id);
+
+        const name = nameCell.innerText.trim();
+        const subject = subjectCell.innerText.trim();
+        const marks = marksCell.innerText.trim();
+
+        nameCell.innerHTML = `<input type="text" value="${name}" id="name-${id}">`;
+        subjectCell.innerHTML = `<input type="text" value="${subject}" id="subject-${id}">`;
+        marksCell.innerHTML = `<input type="number" value="${marks}" id="marks-${id}">`;
+
+        saveBtn.style.display = 'inline-block';
+    }
+
+    function submitEdit(id, url) {
+        const name = document.getElementById(`name-${id}`).value;
+        const subject = document.getElementById(`subject-${id}`).value;
+        const marks = document.getElementById(`marks-${id}`).value;
+
+        const form = document.getElementById('editForm');
+        form.action = url;
+        document.getElementById('editName').value = name;
+        document.getElementById('editSubject').value = subject;
+        document.getElementById('editMarks').value = marks;
+        form.submit();
+    }
+
+    // Dropdown click behavior
+    document.querySelectorAll('.arrow-button').forEach(button => {
+        button.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const dropdown = this.nextElementSibling;
+            document.querySelectorAll('.dropdown-content').forEach(d => {
+                if (d !== dropdown) d.style.display = 'none';
+            });
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+    });
+
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.dropdown-content').forEach(d => d.style.display = 'none');
+    });
+
+    lucide.createIcons();
+</script>
+
+</body>
+</html>
