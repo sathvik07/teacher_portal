@@ -67,7 +67,7 @@ def add_student_view(request):
                 defaults={"marks": marks}
             )
             if not created:
-                student.marks = int(marks)
+                student.marks += int(marks)
                 student.save()
                 logger.info(f"Updated marks for student '{name}' in subject '{subject}'.")
                 messages.success(request, f"Updated {name}'s marks for {subject} successfully!")
